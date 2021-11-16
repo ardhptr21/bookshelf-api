@@ -67,7 +67,39 @@ module.exports.addBookHandler = (request, h) => {
  * @param {import('@hapi/hapi').ResponseToolkit} h
  */
 module.exports.getBooksHandler = (request, h) => {
-  const newBooks = books.map(book => ({ id: book.id, name: book.name, publisher: book.publisher }))
+  const { name, reading, finished } = request.query
+
+  let newBooks = [...books]
+
+  if (name) {
+    newBooks = newBooks.filter(book => book.name.toLowerCase().includes(name.toLowerCase()))
+  }
+
+  if (reading) {
+    newBooks = newBooks.filter(book => {
+      if (!isNaN(reading)) {
+        if (+reading === 0 || +reading === 1) {
+          return book.reading === !!+reading
+        }
+      }
+
+      return true
+    })
+  }
+
+  if (finished) {
+    newBooks = newBooks.filter(book => {
+      if (!isNaN(finished)) {
+        if (+finished === 0 || +finished === 1) {
+          return book.finished === !!+finished
+        }
+      }
+
+      return true
+    })
+  }
+
+  newBooks = newBooks.map(book => ({ id: book.id, name: book.name, publisher: book.publisher }))
 
   return h.response({
     status: 'success',
