@@ -15,14 +15,14 @@ module.exports.addBookHandler = (request, h) => {
 
   if (!name) {
     return h.response({
-      status: 'failed',
+      status: 'fail',
       message: 'Gagal menambahkan buku. Mohon isi nama buku'
     }).code(400)
   }
 
   if (readPage > pageCount) {
     return h.response({
-      status: 'failed',
+      status: 'fail',
       message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount'
     }).code(400)
   }
@@ -46,7 +46,7 @@ module.exports.addBookHandler = (request, h) => {
 
   if (!isSuccess) {
     return h.response({
-      status: 'failed',
+      status: 'fail',
       message: 'Gagal menambahkan buku. Mohon coba lagi'
     }).code(400)
   }
@@ -67,10 +67,12 @@ module.exports.addBookHandler = (request, h) => {
  * @param {import('@hapi/hapi').ResponseToolkit} h
  */
 module.exports.getBooksHandler = (request, h) => {
+  const newBooks = books.map(book => ({ id: book.id, name: book.name, publisher: book.publisher }))
+
   return h.response({
     status: 'success',
     data: {
-      books
+      books: newBooks
     }
   }).code(200)
 }
@@ -87,7 +89,7 @@ module.exports.getBookHandler = (request, h) => {
 
   if (!book) {
     return h.response({
-      status: 'failed',
+      status: 'fail',
       message: 'Buku tidak ditemukan'
     }).code(404)
   }
@@ -111,26 +113,24 @@ module.exports.updateBookHandler = (request, h) => {
   const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload
   const index = books.findIndex(book => book.id === bookId)
 
-  console.log(name)
-
   if (index === -1) {
     return h.response({
-      status: 'failed',
-      message: 'Buku tidak ditemukan'
+      status: 'fail',
+      message: 'Gagal memperbarui buku. Id tidak ditemukan'
     }).code(404)
   }
 
   if (!name) {
     return h.response({
-      status: 'failed',
-      message: 'Gagal menambahkan buku. Mohon isi nama buku'
+      status: 'fail',
+      message: 'Gagal memperbarui buku. Mohon isi nama buku'
     }).code(400)
   }
 
   if (readPage > pageCount) {
     return h.response({
-      status: 'failed',
-      message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount'
+      status: 'fail',
+      message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount'
     }).code(400)
   }
 
@@ -151,5 +151,30 @@ module.exports.updateBookHandler = (request, h) => {
   return h.response({
     status: 'success',
     message: 'Buku berhasil diperbarui'
+  }).code(200)
+}
+
+/**
+ * Edit and update book data handler function
+ *
+ * @param {import('@hapi/hapi').Request} request
+ * @param {import('@hapi/hapi').ResponseToolkit} h
+*/
+module.exports.deleteBookHandler = (request, h) => {
+  const { bookId } = request.params
+  const index = books.findIndex(book => book.id === bookId)
+
+  if (index === -1) {
+    return h.response({
+      status: 'fail',
+      message: 'Buku gagal dihapus. Id tidak ditemukan'
+    }).code(404)
+  }
+
+  books.splice(index, 1)
+
+  return h.response({
+    status: 'success',
+    message: 'Buku berhasil dihapus'
   }).code(200)
 }
