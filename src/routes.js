@@ -1,9 +1,11 @@
+const { addBookHandler } = require('./handlers')
+
 const routes = [
   {
     // menyimpan buku
     method: 'POST',
     path: '/books',
-    handler: (request, h) => {}
+    handler: addBookHandler
   },
   {
     // menampilkan seluruh buku
