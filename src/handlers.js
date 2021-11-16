@@ -59,3 +59,43 @@ module.exports.addBookHandler = (request, h) => {
     }
   }).code(201)
 }
+
+/**
+ * Get all books handler function
+ *
+ * @param {import('@hapi/hapi').Request} request
+ * @param {import('@hapi/hapi').ResponseToolkit} h
+ */
+module.exports.getBooksHandler = (request, h) => {
+  return h.response({
+    status: 'success',
+    data: {
+      books
+    }
+  }).code(200)
+}
+
+/**
+ * Get detail book handler function
+ *
+ * @param {import('@hapi/hapi').Request} request
+ * @param {import('@hapi/hapi').ResponseToolkit} h
+*/
+module.exports.getBookHandler = (request, h) => {
+  const { bookId } = request.params
+  const book = books.find(book => book.id === bookId)
+
+  if (!book) {
+    return h.response({
+      status: 'failed',
+      message: 'Buku tidak ditemukan'
+    }).code(404)
+  }
+
+  return h.response({
+    status: 'success',
+    data: {
+      book
+    }
+  }).code(200)
+}
