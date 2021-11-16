@@ -99,3 +99,57 @@ module.exports.getBookHandler = (request, h) => {
     }
   }).code(200)
 }
+
+/**
+ * Edit and update book data handler function
+ *
+ * @param {import('@hapi/hapi').Request} request
+ * @param {import('@hapi/hapi').ResponseToolkit} h
+*/
+module.exports.updateBookHandler = (request, h) => {
+  const { bookId } = request.params
+  const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload
+  const index = books.findIndex(book => book.id === bookId)
+
+  console.log(name)
+
+  if (index === -1) {
+    return h.response({
+      status: 'failed',
+      message: 'Buku tidak ditemukan'
+    }).code(404)
+  }
+
+  if (!name) {
+    return h.response({
+      status: 'failed',
+      message: 'Gagal menambahkan buku. Mohon isi nama buku'
+    }).code(400)
+  }
+
+  if (readPage > pageCount) {
+    return h.response({
+      status: 'failed',
+      message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount'
+    }).code(400)
+  }
+
+  books[index] = {
+    ...books[index],
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    finished: readPage === pageCount,
+    reading,
+    updatedAt: new Date().toISOString()
+  }
+
+  return h.response({
+    status: 'success',
+    message: 'Buku berhasil diperbarui'
+  }).code(200)
+}
