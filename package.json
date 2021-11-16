@@ -12,6 +12,10 @@
     "bookshelf",
     "restapi"
   ],
+  "engines": {
+    "node": "15.x"
+  }
+  ,
   "author": "Ardhi Putra",
   "license": "ISC",
   "devDependencies": {
